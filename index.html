@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>MineSweeper Team Edition</title>
+<title>MineSweeper Team Edition (Local Pass-and-Play)</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
 
@@ -13,87 +13,25 @@
     --win-darker: #404040;
     --win-white: #ffffff;
     --win-blue: #000080;
-    --win-blue-light: #1084d0;
-    --win-text: #000000;
-    --win-red: #ff0000;
+    --win-red: #cc0000;
     --cell-size: 28px;
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; }
 
   body {
+    margin: 0;
+    min-height: 100vh;
     background: #008080;
     font-family: 'Share Tech Mono', monospace;
     font-size: 12px;
-    min-height: 100vh;
+    padding: 16px;
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    padding: 20px;
-    overflow-x: hidden;
-    background-image: 
-      repeating-linear-gradient(45deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+    color: #000;
   }
 
-  /* Windows 3.1 button style */
-  .win-btn {
-    background: var(--win-gray);
-    border: none;
-    border-top: 2px solid var(--win-white);
-    border-left: 2px solid var(--win-white);
-    border-bottom: 2px solid var(--win-darker);
-    border-right: 2px solid var(--win-darker);
-    padding: 4px 12px;
-    cursor: pointer;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 12px;
-    color: var(--win-text);
-    min-width: 75px;
-  }
-  .win-btn:active {
-    border-top: 2px solid var(--win-darker);
-    border-left: 2px solid var(--win-darker);
-    border-bottom: 2px solid var(--win-white);
-    border-right: 2px solid var(--win-white);
-    padding: 5px 11px 3px 13px;
-  }
-  .win-btn:disabled {
-    color: var(--win-dark);
-    cursor: default;
-  }
-
-  /* Windows 3.1 panel */
-  .win-panel {
-    background: var(--win-gray);
-    border-top: 2px solid var(--win-white);
-    border-left: 2px solid var(--win-white);
-    border-bottom: 2px solid var(--win-darker);
-    border-right: 2px solid var(--win-darker);
-  }
-  .win-panel-inset {
-    background: var(--win-gray);
-    border-top: 2px solid var(--win-darker);
-    border-left: 2px solid var(--win-darker);
-    border-bottom: 2px solid var(--win-white);
-    border-right: 2px solid var(--win-white);
-  }
-
-  /* Title bar */
-  .title-bar {
-    background: var(--win-blue);
-    color: var(--win-white);
-    padding: 3px 6px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-family: 'VT323', monospace;
-    font-size: 16px;
-    letter-spacing: 1px;
-  }
-  .title-bar-text { display: flex; align-items: center; gap: 6px; }
-  .title-bar-icon { font-size: 14px; }
-
-  /* Main window */
   .main-window {
     background: var(--win-gray);
     border-top: 2px solid var(--win-white);
@@ -101,142 +39,193 @@
     border-bottom: 2px solid var(--win-darker);
     border-right: 2px solid var(--win-darker);
     width: 100%;
-    max-width: 900px;
+    max-width: 1020px;
+  }
+
+  .title-bar {
+    background: var(--win-blue);
+    color: #fff;
+    padding: 4px 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    letter-spacing: 0.5px;
   }
 
   .menu-bar {
     padding: 2px 8px;
-    display: flex;
-    gap: 12px;
     border-bottom: 1px solid var(--win-dark);
   }
-  .menu-item {
-    cursor: pointer;
-    padding: 1px 4px;
-    font-size: 12px;
-  }
-  .menu-item:hover { background: var(--win-blue); color: white; }
 
-  /* Content layout */
   .content {
     display: flex;
-    gap: 0;
+    gap: 10px;
     padding: 8px;
+    flex-wrap: wrap;
   }
 
-  /* Game area */
   .game-area {
-    flex: 1;
+    flex: 1 1 620px;
+    min-width: 280px;
     display: flex;
     flex-direction: column;
     gap: 8px;
   }
 
-  /* Header panel */
-  .header-panel {
-    background: var(--win-gray);
+  .scoreboard {
+    width: 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 0 1 260px;
+  }
+
+  .header-panel,
+  .turn-panel,
+  .game-over-banner,
+  .status-panel,
+  .score-window,
+  .controls-panel,
+  .instructions {
     border-top: 2px solid var(--win-darker);
     border-left: 2px solid var(--win-darker);
     border-bottom: 2px solid var(--win-white);
     border-right: 2px solid var(--win-white);
-    padding: 6px 10px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    background: var(--win-gray);
   }
 
-  /* LED display */
+  .header-panel {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+  }
+
   .led-display {
     background: #000;
     color: #ff0000;
     font-family: 'VT323', monospace;
-    font-size: 28px;
-    padding: 2px 6px;
-    letter-spacing: 2px;
-    min-width: 60px;
+    font-size: 32px;
+    min-width: 72px;
+    padding: 2px 8px;
     text-align: center;
     border-top: 1px solid #404040;
     border-left: 1px solid #404040;
     border-bottom: 1px solid #808080;
     border-right: 1px solid #808080;
-    min-height: 36px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
 
-  /* Smiley button */
-  .smiley-btn {
+  .smiley-btn,
+  .win-btn {
     background: var(--win-gray);
+    border: none;
     border-top: 2px solid var(--win-white);
     border-left: 2px solid var(--win-white);
     border-bottom: 2px solid var(--win-darker);
     border-right: 2px solid var(--win-darker);
-    width: 36px;
-    height: 36px;
+    font-family: 'Share Tech Mono', monospace;
     cursor: pointer;
-    font-size: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
   }
-  .smiley-btn:active {
+
+  .smiley-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 20px;
+  }
+
+  .win-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+  }
+
+  .smiley-btn:active,
+  .win-btn:active {
     border-top: 2px solid var(--win-darker);
     border-left: 2px solid var(--win-darker);
     border-bottom: 2px solid var(--win-white);
     border-right: 2px solid var(--win-white);
   }
 
-  /* Mine grid */
+  .turn-panel,
+  .game-over-banner,
+  .instructions,
+  .controls-panel {
+    padding: 7px 10px;
+  }
+
+  .turn-label {
+    font-size: 11px;
+  }
+
+  .turn-name {
+    font-family: 'VT323', monospace;
+    font-size: 24px;
+    color: var(--win-blue);
+  }
+
+  .game-over-banner {
+    display: none;
+    text-align: center;
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    color: var(--win-red);
+  }
+
+  .game-over-banner.visible {
+    display: block;
+  }
+
   .mine-grid-wrapper {
     border-top: 2px solid var(--win-darker);
     border-left: 2px solid var(--win-darker);
     border-bottom: 2px solid var(--win-white);
     border-right: 2px solid var(--win-white);
-    display: inline-block;
+    overflow: auto;
+    max-width: 100%;
     align-self: flex-start;
+    background: var(--win-gray);
   }
+
   .mine-grid {
     display: grid;
     grid-template-columns: repeat(16, var(--cell-size));
-    gap: 0;
   }
 
   .cell {
     width: var(--cell-size);
     height: var(--cell-size);
+    padding: 0;
     background: var(--win-gray);
     border-top: 2px solid var(--win-white);
     border-left: 2px solid var(--win-white);
     border-bottom: 2px solid var(--win-dark);
     border-right: 2px solid var(--win-dark);
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     font-family: 'VT323', monospace;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: bold;
+    cursor: pointer;
+    line-height: 1;
     user-select: none;
-    position: relative;
-    transition: background 0.05s;
   }
-  .cell:hover:not(.revealed):not(.game-over-cell) {
-    background: #d4d4d4;
+
+  .cell:focus-visible {
+    outline: 2px dashed var(--win-blue);
+    outline-offset: -2px;
   }
+
   .cell.revealed {
     border-top: 1px solid var(--win-dark);
     border-left: 1px solid var(--win-dark);
     border-bottom: 1px solid var(--win-white);
     border-right: 1px solid var(--win-white);
     cursor: default;
-    background: var(--win-gray);
   }
-  .cell.flagged::after {
-    content: '🚩';
-    font-size: 14px;
-  }
-  .cell.mine-revealed { background: var(--win-red); }
+
+  .cell.mine-revealed { background: #f0aaaa; }
+  .cell.mine-hit { background: #ff4d4d; }
+  .cell.wrong-flag { color: #7a0000; font-size: 18px; }
   .cell.num-1 { color: #0000ff; }
   .cell.num-2 { color: #008000; }
   .cell.num-3 { color: #ff0000; }
@@ -246,796 +235,227 @@
   .cell.num-7 { color: #000000; }
   .cell.num-8 { color: #808080; }
 
-  /* Turn indicator */
-  .turn-panel {
-    background: var(--win-gray);
-    border-top: 2px solid var(--win-darker);
-    border-left: 2px solid var(--win-darker);
-    border-bottom: 2px solid var(--win-white);
-    border-right: 2px solid var(--win-white);
-    padding: 6px 10px;
-    text-align: center;
-    font-size: 13px;
-  }
-  .turn-name {
-    font-family: 'VT323', monospace;
-    font-size: 20px;
-    color: var(--win-blue);
-  }
-
-  /* Scoreboard */
-  .scoreboard {
-    width: 200px;
-    margin-left: 10px;
+  .status-bar {
     display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
-  .score-window {
-    background: var(--win-gray);
-    border-top: 2px solid var(--win-white);
-    border-left: 2px solid var(--win-white);
-    border-bottom: 2px solid var(--win-darker);
-    border-right: 2px solid var(--win-darker);
-  }
-  .score-title-bar {
-    background: var(--win-blue);
-    color: white;
-    padding: 2px 6px;
-    font-family: 'VT323', monospace;
-    font-size: 15px;
-    display: flex;
-    align-items: center;
     gap: 4px;
   }
-  .score-content {
-    padding: 6px;
+
+  .status-panel {
+    flex: 1;
+    padding: 2px 6px;
+    min-height: 24px;
     display: flex;
-    flex-direction: column;
-    gap: 2px;
-    min-height: 60px;
+    align-items: center;
   }
+
+  .status-panel.meta {
+    flex: 0 0 auto;
+    min-width: 240px;
+    justify-content: center;
+  }
+
+  .score-title-bar {
+    background: var(--win-blue);
+    color: #fff;
+    padding: 2px 6px;
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+  }
+
+  .score-content,
+  .players-list,
+  .log-content {
+    padding: 6px;
+  }
+
+  .players-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    min-height: 38px;
+  }
+
+  .player-chip {
+    background: #fff;
+    border: 1px solid var(--win-dark);
+    padding: 2px 6px;
+    font-family: 'VT323', monospace;
+    font-size: 18px;
+  }
+
+  .player-chip.active-turn {
+    background: #ffff00;
+  }
+
   .score-row {
     display: flex;
     justify-content: space-between;
-    align-items: center;
-    padding: 2px 4px;
-    font-size: 11px;
     border-bottom: 1px solid var(--win-dark);
+    padding: 2px 3px;
   }
+
   .score-row:last-child { border-bottom: none; }
-  .score-row.active-player {
-    background: var(--win-blue);
-    color: white;
-  }
-  .score-row.current-turn {
-    background: #ffff00;
-    color: black;
-  }
-  .player-name { font-family: 'VT323', monospace; font-size: 15px; }
-  .player-score { font-family: 'VT323', monospace; font-size: 15px; }
+  .score-row.current-turn { background: #ffff9f; }
 
-  /* Login dialog */
-  .dialog-overlay {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.3);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-  }
-  .dialog {
-    background: var(--win-gray);
-    border-top: 2px solid var(--win-white);
-    border-left: 2px solid var(--win-white);
-    border-bottom: 2px solid var(--win-darker);
-    border-right: 2px solid var(--win-darker);
-    width: 320px;
-  }
-  .dialog-body {
-    padding: 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  .dialog-label { font-size: 12px; }
-  .win-input {
-    background: white;
-    border-top: 1px solid var(--win-darker);
-    border-left: 1px solid var(--win-darker);
-    border-bottom: 1px solid var(--win-white);
-    border-right: 1px solid var(--win-white);
-    padding: 3px 6px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 13px;
-    width: 100%;
-    outline: none;
-  }
-  .dialog-footer {
-    padding: 8px;
-    display: flex;
-    justify-content: center;
-    gap: 8px;
-    border-top: 1px solid var(--win-dark);
-  }
-
-  /* Status bar */
-  .status-bar {
-    display: flex;
-    gap: 2px;
-    padding: 2px 4px;
-    border-top: 1px solid var(--win-dark);
-    margin-top: 2px;
-  }
-  .status-panel {
-    flex: 1;
-    padding: 1px 4px;
-    border-top: 1px solid var(--win-darker);
-    border-left: 1px solid var(--win-darker);
-    border-bottom: 1px solid var(--win-white);
-    border-right: 1px solid var(--win-white);
-    font-size: 11px;
-    color: #444;
-  }
-
-  /* Game over overlay on grid */
-  .game-over-banner {
-    text-align: center;
-    padding: 6px;
-    background: var(--win-gray);
-    border-top: 2px solid var(--win-darker);
-    border-left: 2px solid var(--win-darker);
-    border-bottom: 2px solid var(--win-white);
-    border-right: 2px solid var(--win-white);
+  .player-name,
+  .player-score {
     font-family: 'VT323', monospace;
-    font-size: 18px;
-    color: var(--win-red);
-    display: none;
-  }
-  .game-over-banner.visible { display: block; }
-
-  /* Players online */
-  .players-online {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 3px;
-    padding: 4px;
-  }
-  .player-chip {
-    background: white;
-    border: 1px solid var(--win-dark);
-    padding: 1px 5px;
-    font-size: 10px;
-    font-family: 'VT323', monospace;
-    font-size: 13px;
-  }
-  .player-chip.you { background: #000080; color: white; }
-
-  /* Animations */
-  @keyframes flash {
-    0%, 100% { background: var(--win-gray); }
-    50% { background: #ff4444; }
-  }
-  .explode { animation: flash 0.1s 5; }
-
-  @keyframes blink-cursor {
-    0%, 100% { opacity: 1; } 50% { opacity: 0; }
+    font-size: 19px;
   }
 
-  /* Chat log */
   .log-content {
-    padding: 4px;
-    max-height: 120px;
+    max-height: 150px;
     overflow-y: auto;
-    font-size: 10px;
-    color: #333;
+    font-size: 11px;
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    gap: 2px;
+    min-height: 80px;
   }
-  .log-entry { padding: 1px 2px; }
-  .log-entry.boom { color: var(--win-red); font-weight: bold; font-family: 'VT323', monospace; font-size: 13px; }
-  .log-entry.safe { color: #006600; }
-  .log-entry.info { color: #000080; }
 
-  .cell.not-your-turn { cursor: not-allowed; }
+  .log-entry.safe { color: #006600; }
+  .log-entry.loss { color: #990000; font-weight: bold; }
+  .log-entry.win { color: #000080; font-weight: bold; }
+
+  .controls-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .field-row {
+    display: flex;
+    gap: 6px;
+  }
+
+  .win-input {
+    flex: 1;
+    min-width: 0;
+    border-top: 1px solid var(--win-darker);
+    border-left: 1px solid var(--win-darker);
+    border-bottom: 1px solid var(--win-white);
+    border-right: 1px solid var(--win-white);
+    padding: 4px 6px;
+    font-family: 'Share Tech Mono', monospace;
+  }
+
+  .error-text {
+    color: #a00000;
+    font-size: 11px;
+  }
+
+  .placeholder {
+    color: #555;
+  }
+
+  .local-note {
+    font-size: 11px;
+  }
+
+  .flag-toggle {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+
+  @media (max-width: 1000px) {
+    .scoreboard {
+      width: 100%;
+      flex: 1 1 100%;
+    }
+  }
+
+  @media (max-width: 780px) {
+    :root { --cell-size: 24px; }
+    body { padding: 8px; }
+    .status-bar { flex-direction: column; }
+    .status-panel.meta { min-width: 0; }
+  }
 </style>
 </head>
 <body>
-
-<!-- Login Dialog -->
-<div class="dialog-overlay" id="loginOverlay">
-  <div class="dialog">
-    <div class="title-bar">
-      <div class="title-bar-text"><span class="title-bar-icon">💣</span> MineSweeper - Enter Name</div>
-    </div>
-    <div class="dialog-body">
-      <div class="dialog-label">Enter your name to join the game (max 8 players):</div>
-      <input class="win-input" id="nameInput" maxlength="16" placeholder="YourName" autofocus>
-      <div id="loginError" style="color:red;font-size:11px;display:none;"></div>
-    </div>
-    <div class="dialog-footer">
-      <button class="win-btn" onclick="joinGame()">OK</button>
-      <button class="win-btn" onclick="document.getElementById('nameInput').value=''">Clear</button>
-    </div>
-  </div>
-</div>
-
-<!-- Main Window -->
 <div class="main-window">
   <div class="title-bar">
-    <div class="title-bar-text">
-      <span class="title-bar-icon">💣</span>
-      MineSweeper — Team Edition
-    </div>
-    <div style="display:flex;gap:2px;">
-      <div style="background:#c0c0c0;border-top:1px solid white;border-left:1px solid white;border-bottom:1px solid #404040;border-right:1px solid #404040;width:16px;height:14px;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;">_</div>
-      <div style="background:#c0c0c0;border-top:1px solid white;border-left:1px solid white;border-bottom:1px solid #404040;border-right:1px solid #404040;width:16px;height:14px;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;">□</div>
-      <div style="background:#c0c0c0;border-top:1px solid white;border-left:1px solid white;border-bottom:1px solid #404040;border-right:1px solid #404040;width:16px;height:14px;display:flex;align-items:center;justify-content:center;font-size:10px;cursor:pointer;">✕</div>
-    </div>
+    <div>💣 MineSweeper — Team Edition (Local)</div>
   </div>
-  <div class="menu-bar">
-    <span class="menu-item">Game</span>
-    <span class="menu-item">Help</span>
-  </div>
+  <div class="menu-bar">Local pass-and-play • single device/browser profile</div>
 
   <div class="content">
-    <!-- Game Area -->
-    <div class="game-area">
-      <!-- Header with counters -->
+    <section class="game-area" aria-label="Minesweeper board area">
       <div class="header-panel">
-        <div class="led-display" id="mineCounter">040</div>
-        <button class="smiley-btn" id="smileyBtn" onclick="resetGame()">🙂</button>
-        <div class="led-display" id="timerDisplay">000</div>
+        <div class="led-display" id="mineCounter" aria-label="Remaining mines">040</div>
+        <button class="smiley-btn" id="smileyBtn" aria-label="Start new round">🙂</button>
+        <div class="led-display" id="timerDisplay" aria-label="Elapsed time">000</div>
       </div>
 
-      <!-- Turn indicator -->
-      <div class="turn-panel" id="turnPanel">
-        <div style="font-size:11px;">Current Turn:</div>
-        <div class="turn-name" id="turnName">Waiting for players...</div>
+      <div class="turn-panel">
+        <div class="turn-label">Current turn</div>
+        <div class="turn-name" id="turnName">Player 1</div>
       </div>
 
-      <!-- Game over banner -->
-      <div class="game-over-banner" id="gameOverBanner">💥 BOOM! Game Over! Press 🙂 to restart 💥</div>
+      <div class="instructions">
+        Left-click/tap or Enter/Space: reveal • Right-click or <kbd>F</kbd>: flag • For touch, toggle “Flag mode” then tap.
+      </div>
 
-      <!-- Mine grid -->
+      <div class="controls-panel">
+        <label class="flag-toggle">
+          <input type="checkbox" id="flagModeToggle">
+          <span>Flag mode (for touch/keyboard convenience)</span>
+        </label>
+      </div>
+
+      <div class="game-over-banner" id="gameOverBanner"><span id="gameOverText"></span></div>
+
       <div class="mine-grid-wrapper">
-        <div class="mine-grid" id="mineGrid"></div>
+        <div class="mine-grid" id="mineGrid" role="grid" aria-label="Minesweeper board"></div>
       </div>
 
-      <!-- Status bar -->
       <div class="status-bar">
         <div class="status-panel" id="statusBar">Ready</div>
-        <div class="status-panel" style="max-width:80px;" id="syncStatus">⟳ Syncing</div>
+        <div class="status-panel meta">
+          <span id="saveMode"></span>
+        </div>
       </div>
-    </div>
+      <div class="local-note" id="localHint"></div>
+    </section>
 
-    <!-- Scoreboard -->
-    <div class="scoreboard">
-      <!-- Players online -->
+    <aside class="scoreboard">
       <div class="score-window">
-        <div class="score-title-bar">👥 Players Online</div>
-        <div class="players-online" id="playersOnline"></div>
+        <div class="score-title-bar">👥 Players</div>
+        <div class="players-list" id="playersList"></div>
       </div>
 
-      <!-- Scoreboard -->
       <div class="score-window">
-        <div class="score-title-bar">🏆 Scoreboard</div>
-        <div class="score-content" id="scoreboardContent">
-          <div style="padding:4px;font-size:11px;color:#666;">No players yet</div>
+        <div class="score-title-bar">➕ Add Local Player</div>
+        <div class="score-content">
+          <div class="field-row">
+            <input class="win-input" id="addPlayerInput" maxlength="16" placeholder="Name (1-16 chars)">
+            <button class="win-btn" id="addPlayerBtn" type="button">Add</button>
+          </div>
+          <div class="error-text" id="addPlayerError" hidden></div>
+          <div style="margin-top:6px;">Max 8 players on this device.</div>
         </div>
       </div>
 
-      <!-- Game Log -->
       <div class="score-window">
-        <div class="score-title-bar">📋 Game Log</div>
+        <div class="score-title-bar">🏆 Scoreboard</div>
+        <div class="score-content" id="scoreboardContent"></div>
+      </div>
+
+      <div class="score-window">
+        <div class="score-title-bar">📋 Round Log</div>
         <div class="log-content" id="gameLog"></div>
       </div>
 
-      <!-- New Round button -->
-      <button class="win-btn" onclick="resetGame()" style="width:100%;">New Round</button>
-    </div>
+      <div class="field-row">
+        <button class="win-btn" id="newRoundBtn" type="button" style="flex:1;">New Round</button>
+        <button class="win-btn" id="resetBtn" type="button" style="flex:1;">Reset Session</button>
+      </div>
+    </aside>
   </div>
 </div>
 
-<script>
-// ═══════════════════════════════════════════════════════
-// GAME CONFIG
-// ═══════════════════════════════════════════════════════
-const ROWS = 16, COLS = 16, MINES = 40;
-const POLL_INTERVAL = 1500;
-const HEARTBEAT_INTERVAL = 5000;
-const PLAYER_TIMEOUT = 15000;
-
-let myName = null;
-let myId = null;
-let localState = null;
-let pollTimer = null;
-let heartbeatTimer = null;
-let gameTimer = null;
-let timerSeconds = 0;
-let isFirstClick = true;
-let lastStateHash = '';
-
-// ═══════════════════════════════════════════════════════
-// STORAGE KEYS
-// ═══════════════════════════════════════════════════════
-const KEY_GAME = 'ms-game-state';
-const KEY_PLAYERS = 'ms-players';
-const KEY_SCORES = 'ms-scores';
-const KEY_LOG = 'ms-log';
-
-// ═══════════════════════════════════════════════════════
-// STORAGE HELPERS
-// ═══════════════════════════════════════════════════════
-async function storageGet(key) {
-  try {
-    const r = await window.storage.get(key, true);
-    return r ? JSON.parse(r.value) : null;
-  } catch(e) { return null; }
-}
-async function storageSet(key, val) {
-  try {
-    await window.storage.set(key, JSON.stringify(val), true);
-  } catch(e) {}
-}
-
-// ═══════════════════════════════════════════════════════
-// GAME STATE INIT
-// ═══════════════════════════════════════════════════════
-function createEmptyBoard() {
-  return Array.from({length: ROWS}, () =>
-    Array.from({length: COLS}, () => ({
-      mine: false, revealed: false, flagged: false, count: 0
-    }))
-  );
-}
-
-function placeMines(board, safeR, safeC) {
-  let placed = 0;
-  while (placed < MINES) {
-    const r = Math.floor(Math.random() * ROWS);
-    const c = Math.floor(Math.random() * COLS);
-    if (!board[r][c].mine && !(Math.abs(r - safeR) <= 1 && Math.abs(c - safeC) <= 1)) {
-      board[r][c].mine = true;
-      placed++;
-    }
-  }
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      if (board[r][c].mine) continue;
-      let cnt = 0;
-      for (let dr = -1; dr <= 1; dr++)
-        for (let dc = -1; dc <= 1; dc++) {
-          const nr = r+dr, nc = c+dc;
-          if (nr >= 0 && nr < ROWS && nc >= 0 && nc < COLS && board[nr][nc].mine) cnt++;
-        }
-      board[r][c].count = cnt;
-    }
-  }
-}
-
-function newGameState() {
-  return {
-    board: createEmptyBoard(),
-    minesLeft: MINES,
-    gameOver: false,
-    gameWon: false,
-    firstClick: true,
-    currentTurnIndex: 0,
-    turnOrder: [],
-    startTime: null,
-    endTime: null,
-    roundNumber: 1,
-    version: Date.now()
-  };
-}
-
-// ═══════════════════════════════════════════════════════
-// JOIN GAME
-// ═══════════════════════════════════════════════════════
-async function joinGame() {
-  const nameInput = document.getElementById('nameInput');
-  const name = nameInput.value.trim();
-  const errorEl = document.getElementById('loginError');
-
-  if (!name) { errorEl.textContent = 'Please enter a name.'; errorEl.style.display = 'block'; return; }
-  if (name.length > 16) { errorEl.textContent = 'Name too long (max 16 chars).'; errorEl.style.display = 'block'; return; }
-
-  // Check current players
-  let players = await storageGet(KEY_PLAYERS) || {};
-  const now = Date.now();
-  
-  // Clean up stale players
-  for (const id in players) {
-    if (now - players[id].lastSeen > PLAYER_TIMEOUT) delete players[id];
-  }
-
-  const activeCount = Object.keys(players).length;
-  if (activeCount >= 8) {
-    errorEl.textContent = 'Game is full (8 players max). Try again later.';
-    errorEl.style.display = 'block';
-    return;
-  }
-
-  // Check name taken
-  const nameTaken = Object.values(players).some(p => p.name.toLowerCase() === name.toLowerCase());
-  if (nameTaken) {
-    errorEl.textContent = 'Name already taken. Choose another.';
-    errorEl.style.display = 'block';
-    return;
-  }
-
-  myName = name;
-  myId = 'p_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
-
-  // Register player
-  players[myId] = { name: myName, lastSeen: now };
-  await storageSet(KEY_PLAYERS, players);
-
-  // Add to game turn order if not already
-  let gs = await storageGet(KEY_GAME);
-  if (!gs) {
-    gs = newGameState();
-  }
-  if (!gs.turnOrder.includes(myName)) {
-    gs.turnOrder.push(myName);
-    gs.version = Date.now();
-    await storageSet(KEY_GAME, gs);
-  }
-
-  await addLog(`${myName} joined the game!`, 'info');
-
-  document.getElementById('loginOverlay').style.display = 'none';
-  localState = gs;
-  renderGame(gs);
-  startPolling();
-  startHeartbeat();
-}
-
-// ═══════════════════════════════════════════════════════
-// HEARTBEAT
-// ═══════════════════════════════════════════════════════
-function startHeartbeat() {
-  heartbeatTimer = setInterval(async () => {
-    let players = await storageGet(KEY_PLAYERS) || {};
-    if (players[myId]) {
-      players[myId].lastSeen = Date.now();
-      await storageSet(KEY_PLAYERS, players);
-    }
-  }, HEARTBEAT_INTERVAL);
-}
-
-// ═══════════════════════════════════════════════════════
-// POLLING
-// ═══════════════════════════════════════════════════════
-function startPolling() {
-  pollTimer = setInterval(async () => {
-    await syncState();
-  }, POLL_INTERVAL);
-}
-
-async function syncState() {
-  const gs = await storageGet(KEY_GAME);
-  const players = await storageGet(KEY_PLAYERS) || {};
-  const scores = await storageGet(KEY_SCORES) || {};
-  const log = await storageGet(KEY_LOG) || [];
-  const now = Date.now();
-
-  // Clean stale players
-  for (const id in players) {
-    if (now - players[id].lastSeen > PLAYER_TIMEOUT) delete players[id];
-  }
-
-  document.getElementById('syncStatus').textContent = '● Live';
-
-  if (gs) {
-    const hash = gs.version + '';
-    if (hash !== lastStateHash) {
-      lastStateHash = hash;
-      localState = gs;
-      renderGame(gs);
-    }
-  }
-
-  renderPlayers(players, gs);
-  renderScoreboard(scores, gs);
-  renderLog(log);
-}
-
-// ═══════════════════════════════════════════════════════
-// GAME ACTIONS
-// ═══════════════════════════════════════════════════════
-async function handleCellClick(r, c) {
-  if (!localState || !myName) return;
-  
-  const gs = await storageGet(KEY_GAME);
-  if (!gs) return;
-
-  if (gs.gameOver) return;
-
-  // Check if it's my turn
-  const currentPlayer = gs.turnOrder[gs.currentTurnIndex % gs.turnOrder.length];
-  if (currentPlayer !== myName) {
-    document.getElementById('statusBar').textContent = `Wait for ${currentPlayer}'s turn!`;
-    return;
-  }
-
-  const cell = gs.board[r][c];
-  if (cell.revealed || cell.flagged) return;
-
-  // First click: place mines
-  if (gs.firstClick) {
-    placeMines(gs.board, r, c);
-    gs.firstClick = false;
-    gs.startTime = Date.now();
-  }
-
-  // Reveal cell
-  if (gs.board[r][c].mine) {
-    // BOOM!
-    gs.board[r][c].revealed = true;
-    gs.gameOver = true;
-    gs.endTime = Date.now();
-    document.getElementById('smileyBtn').textContent = '😵';
-    document.getElementById('gameOverBanner').classList.add('visible');
-
-    // Update scores - the person who hit it loses a point
-    const scores = await storageGet(KEY_SCORES) || {};
-    if (!scores[myName]) scores[myName] = 0;
-    scores[myName] -= 1;
-
-    // Reveal all mines
-    for (let rr = 0; rr < ROWS; rr++)
-      for (let cc = 0; cc < COLS; cc++)
-        if (gs.board[rr][cc].mine) gs.board[rr][cc].revealed = true;
-
-    await storageSet(KEY_SCORES, scores);
-    await addLog(`💥 ${myName} hit a mine! Game over!`, 'boom');
-  } else {
-    // Safe click - award point
-    const scores = await storageGet(KEY_SCORES) || {};
-    if (!scores[myName]) scores[myName] = 0;
-
-    // Flood fill reveal
-    const revealed = floodReveal(gs.board, r, c);
-    scores[myName] += revealed;
-
-    await storageSet(KEY_SCORES, scores);
-    await addLog(`✓ ${myName} revealed ${revealed} cell${revealed>1?'s':''}`, 'safe');
-
-    // Advance turn
-    gs.currentTurnIndex = (gs.currentTurnIndex + 1) % gs.turnOrder.length;
-  }
-
-  gs.minesLeft = MINES - gs.board.flat().filter(c => c.flagged).length;
-  gs.version = Date.now();
-  localState = gs;
-  await storageSet(KEY_GAME, gs);
-  renderGame(gs);
-
-  const scores2 = await storageGet(KEY_SCORES) || {};
-  renderScoreboard(scores2, gs);
-}
-
-function floodReveal(board, r, c) {
-  if (r < 0 || r >= ROWS || c < 0 || c >= COLS) return 0;
-  if (board[r][c].revealed || board[r][c].flagged || board[r][c].mine) return 0;
-  board[r][c].revealed = true;
-  let count = 1;
-  if (board[r][c].count === 0) {
-    for (let dr = -1; dr <= 1; dr++)
-      for (let dc = -1; dc <= 1; dc++)
-        if (dr !== 0 || dc !== 0) count += floodReveal(board, r+dr, c+dc);
-  }
-  return count;
-}
-
-async function handleRightClick(e, r, c) {
-  e.preventDefault();
-  if (!localState || !myName) return;
-  const gs = await storageGet(KEY_GAME);
-  if (!gs || gs.gameOver) return;
-  const currentPlayer = gs.turnOrder[gs.currentTurnIndex % gs.turnOrder.length];
-  if (currentPlayer !== myName) return;
-  const cell = gs.board[r][c];
-  if (cell.revealed) return;
-  cell.flagged = !cell.flagged;
-  gs.minesLeft = MINES - gs.board.flat().filter(c => c.flagged).length;
-  gs.version = Date.now();
-  localState = gs;
-  await storageSet(KEY_GAME, gs);
-  renderGame(gs);
-}
-
-async function resetGame() {
-  if (!myName) return;
-  const gs = await storageGet(KEY_GAME);
-  const scores = await storageGet(KEY_SCORES) || {};
-  
-  const newGs = newGameState();
-  // Keep turn order but advance it so the loser goes first
-  if (gs) {
-    newGs.turnOrder = gs.turnOrder;
-    newGs.roundNumber = (gs.roundNumber || 1) + 1;
-    // rotate turn order
-    if (gs.turnOrder.length > 0) {
-      newGs.currentTurnIndex = 0;
-    }
-  } else {
-    newGs.turnOrder = [myName];
-  }
-
-  await storageSet(KEY_GAME, newGs);
-  await addLog(`🔄 ${myName} started Round ${newGs.roundNumber}!`, 'info');
-
-  document.getElementById('smileyBtn').textContent = '🙂';
-  document.getElementById('gameOverBanner').classList.remove('visible');
-  localState = newGs;
-  renderGame(newGs);
-  renderScoreboard(scores, newGs);
-}
-
-// ═══════════════════════════════════════════════════════
-// LOG
-// ═══════════════════════════════════════════════════════
-async function addLog(msg, type) {
-  let log = await storageGet(KEY_LOG) || [];
-  const time = new Date().toLocaleTimeString('en-US', {hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
-  log.push({ msg, type, time });
-  if (log.length > 50) log = log.slice(-50);
-  await storageSet(KEY_LOG, log);
-}
-
-// ═══════════════════════════════════════════════════════
-// RENDER
-// ═══════════════════════════════════════════════════════
-function renderGame(gs) {
-  if (!gs) return;
-  renderGrid(gs);
-  
-  const currentPlayer = gs.turnOrder[gs.currentTurnIndex % Math.max(gs.turnOrder.length, 1)];
-  document.getElementById('turnName').textContent = gs.gameOver ? '💀 Game Over' : (currentPlayer || 'Waiting...');
-  
-  const mineStr = String(Math.max(0, gs.minesLeft)).padStart(3, '0');
-  document.getElementById('mineCounter').textContent = mineStr;
-
-  if (gs.gameOver) {
-    document.getElementById('smileyBtn').textContent = '😵';
-    document.getElementById('gameOverBanner').classList.add('visible');
-    document.getElementById('statusBar').textContent = 'Game over! Press 🙂 or New Round to restart.';
-  } else {
-    document.getElementById('smileyBtn').textContent = '🙂';
-    document.getElementById('gameOverBanner').classList.remove('visible');
-    const isMyTurn = currentPlayer === myName;
-    document.getElementById('statusBar').textContent = isMyTurn ? '⬅ Your turn! Click a cell.' : `Waiting for ${currentPlayer}...`;
-  }
-}
-
-function renderGrid(gs) {
-  const grid = document.getElementById('mineGrid');
-  const currentPlayer = gs.turnOrder[gs.currentTurnIndex % Math.max(gs.turnOrder.length, 1)];
-  const isMyTurn = currentPlayer === myName && !gs.gameOver;
-
-  if (grid.children.length !== ROWS * COLS) {
-    grid.innerHTML = '';
-    for (let r = 0; r < ROWS; r++) {
-      for (let c = 0; c < COLS; c++) {
-        const cell = document.createElement('div');
-        cell.className = 'cell';
-        cell.dataset.r = r;
-        cell.dataset.c = c;
-        cell.addEventListener('click', () => handleCellClick(+cell.dataset.r, +cell.dataset.c));
-        cell.addEventListener('contextmenu', (e) => handleRightClick(e, +cell.dataset.r, +cell.dataset.c));
-        grid.appendChild(cell);
-      }
-    }
-  }
-
-  const cells = grid.children;
-  for (let r = 0; r < ROWS; r++) {
-    for (let c = 0; c < COLS; c++) {
-      const cell = cells[r * COLS + c];
-      const data = gs.board[r][c];
-      cell.className = 'cell';
-      cell.textContent = '';
-
-      if (data.revealed) {
-        cell.classList.add('revealed');
-        if (data.mine) {
-          cell.classList.add('mine-revealed');
-          cell.textContent = '💣';
-        } else if (data.count > 0) {
-          cell.classList.add(`num-${data.count}`);
-          cell.textContent = data.count;
-        }
-      } else if (data.flagged) {
-        cell.classList.add('flagged');
-      }
-
-      if (!isMyTurn || gs.gameOver) {
-        cell.classList.add('not-your-turn');
-      }
-    }
-  }
-}
-
-function renderPlayers(players, gs) {
-  const container = document.getElementById('playersOnline');
-  const now = Date.now();
-  const activePlayers = Object.values(players).filter(p => now - p.lastSeen < PLAYER_TIMEOUT);
-  
-  container.innerHTML = '';
-  if (activePlayers.length === 0) {
-    container.innerHTML = '<div style="padding:4px;font-size:11px;color:#666;">No players online</div>';
-    return;
-  }
-  activePlayers.forEach(p => {
-    const chip = document.createElement('div');
-    chip.className = 'player-chip' + (p.name === myName ? ' you' : '');
-    chip.textContent = p.name + (p.name === myName ? ' (you)' : '');
-    container.appendChild(chip);
-  });
-}
-
-function renderScoreboard(scores, gs) {
-  const container = document.getElementById('scoreboardContent');
-  container.innerHTML = '';
-
-  const currentPlayer = gs ? gs.turnOrder[gs.currentTurnIndex % Math.max((gs.turnOrder||[]).length, 1)] : null;
-
-  const sorted = Object.entries(scores).sort((a,b) => b[1] - a[1]);
-  if (sorted.length === 0) {
-    container.innerHTML = '<div style="padding:4px;font-size:11px;color:#666;">No scores yet</div>';
-    return;
-  }
-  sorted.forEach(([name, score], i) => {
-    const row = document.createElement('div');
-    row.className = 'score-row';
-    if (name === currentPlayer && gs && !gs.gameOver) row.classList.add('current-turn');
-    if (name === myName) row.classList.add('active-player');
-    row.innerHTML = `<span class="player-name">${i+1}. ${name}</span><span class="player-score">${score >= 0 ? '+' : ''}${score}</span>`;
-    container.appendChild(row);
-  });
-}
-
-function renderLog(log) {
-  const container = document.getElementById('gameLog');
-  const wasAtBottom = container.scrollHeight - container.scrollTop === container.clientHeight;
-  
-  const lastN = log.slice(-30);
-  container.innerHTML = '';
-  lastN.forEach(entry => {
-    const el = document.createElement('div');
-    el.className = 'log-entry ' + (entry.type || '');
-    el.textContent = `[${entry.time}] ${entry.msg}`;
-    container.appendChild(el);
-  });
-  if (wasAtBottom || container.scrollHeight <= container.clientHeight) {
-    container.scrollTop = container.scrollHeight;
-  }
-}
-
-// ═══════════════════════════════════════════════════════
-// TIMER
-// ═══════════════════════════════════════════════════════
-setInterval(() => {
-  if (!localState || !localState.startTime || localState.gameOver) return;
-  const elapsed = Math.floor((Date.now() - localState.startTime) / 1000);
-  document.getElementById('timerDisplay').textContent = String(Math.min(elapsed, 999)).padStart(3, '0');
-}, 1000);
-
-// ═══════════════════════════════════════════════════════
-// KEYBOARD
-// ═══════════════════════════════════════════════════════
-document.getElementById('nameInput').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') joinGame();
-});
-
-// Initial render placeholder
-document.getElementById('mineGrid').innerHTML = '<div style="padding:20px;color:#666;font-size:11px;">Enter your name to play</div>';
-</script>
+<script src="./game.js"></script>
+<script src="./app.js"></script>
 </body>
 </html>
